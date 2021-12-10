@@ -1,6 +1,20 @@
 <resources>
     <string name="app_name">WeatherApp</string>
-    <string name="weather">Weather</string>
     <string name="settings">Settings</string>
-    <string name="wind">Wind</string>
-    </resources>
+    <string name="weather">Weather</string>
+    <string name="wind_button">Wind</string>
+    <string name="edit_text_hint">City</string>
+    <string name="default_weather_value">0.0</string>
+    <string name="default_city_name">Moscow</string>
+    <string name="settings_apply_button">Apply</string>
+
+    <string name="temperature">Temperature: %1$s</string>
+    <string name="temperature_min">Temperature min: %1$s</string>
+    <string name="temperature_max">Temperature max: %1$s</string>
+    <string name="humidity">Humidity: %1$s</string>
+
+    <string name="wind_speed">Wind speed: %1$s</string>
+    <string name="wind_degree">Wind degree: %1$s</string>
+
+    <string name="snackbar_error"></string>
+</resources>

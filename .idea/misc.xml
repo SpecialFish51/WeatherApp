@@ -5,8 +5,10 @@
       <map>
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.16458333333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.1651469098277609" />
         <entry key="app/src/main/res/layout/activity_weather.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_wind.xml" value="0.22056159420289856" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.20416666666666666" />
       </map>
     </option>
   </component>

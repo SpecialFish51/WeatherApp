@@ -2,34 +2,56 @@ package com.example.weatherapp2.features.weather_screen.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.weatherapp2.R
-import com.example.weatherapp2.features.weather_screen.domain.model.WeatherDomainModel
 import com.example.weatherapp2.features.wind_screen.ui.WindScreenActivity
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class WeatherScreenActivity: AppCompatActivity() {
-    private val weatherScreenViewModel by viewModel<WeatherScreenViewModel>()
+
+class WeatherScreenActivity : AppCompatActivity() {
+    private val viewModel by viewModel<WeatherScreenViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
-        weatherScreenViewModel.liveData.observe(this, Observer(::render))
-        weatherScreenViewModel.requestWeather()
 
-        val windButton = findViewById<Button>(R.id.windButton)
+        viewModel.viewState.observe(this, Observer(::render))
+
+        val windButton = findViewById<Button>(R.id.buttonWind)
         windButton.setOnClickListener {
             Intent(this, WindScreenActivity::class.java).also { startActivity(it) }
         }
     }
 
-    private fun render(state: WeatherDomainModel) {
-        findViewById<TextView>(R.id.tvTemperature).let { it.text = state.temperature }
-        findViewById<TextView>(R.id.tvTemperatureMin).let { it.text = state.temperatureMin }
-        findViewById<TextView>(R.id.tvTemperatureMax).let { it.text = state.temperatureMax }
-        findViewById<TextView>(R.id.tvHumidity).let { it.text = state.humidity }
+    private fun render(state: ViewState) {
+        findViewById<TextView>(R.id.tvCityName).text = state.cityName
+        findViewById<TextView>(R.id.tvTemperature).text =
+            getString(R.string.temperature, state.weatherModel.temperature)
+        findViewById<TextView>(R.id.tvTemperatureMin).text =
+            getString(R.string.temperature_min, state.weatherModel.temperatureMin)
+        findViewById<TextView>(R.id.tvTemperatureMax).text =
+            getString(R.string.temperature_max, state.weatherModel.temperatureMax)
+        findViewById<TextView>(R.id.tvHumidity).text =
+            getString(R.string.humidity, state.weatherModel.humidity)
+
+        updateProgressBar(state.isLoading)
+        renderError(state.error)
+    }
+
+    private fun updateProgressBar(isLoading: Boolean) {
+        findViewById<ProgressBar>(R.id.progressBar).visibility =
+            if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun renderError(error: String?) {
+        error?.let {
+            Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
+        }
     }
 }

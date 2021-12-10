@@ -5,7 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 //api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
-//37065663bb276cbf619fbe6c9a8e2e5a
 interface WeatherApi {
     @GET("data/2.5/weather")
     fun getWeather(

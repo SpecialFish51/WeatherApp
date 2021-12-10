@@ -1,27 +1,30 @@
 package com.example.weatherapp2.features.wind_screen.ui
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.example.weatherapp2.features.wind_screen.ui.WindScreenViewModel
 import com.example.weatherapp2.R
-import com.example.weatherapp2.features.weather_screen.domain.model.WindDomainModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
-class WindScreenActivity: AppCompatActivity() {
-    private val windScreenViewModel by viewModel<WindScreenViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+class WindScreenActivity : AppCompatActivity() {
+    val windScreenViewModel by viewModel<WindScreenViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wind)
-        windScreenViewModel.liveData.observe(this, Observer(::render))
-        windScreenViewModel.requestWind()
+        windScreenViewModel.viewState.observe(this, Observer(::render))
     }
 
-    private fun render(state: WindDomainModel) {
-        findViewById<TextView>(R.id.tvWindSpeed).text = state.speed.toString()
+    private fun render(state: ViewState) {
+        val speed = state.windDomainModel.speed.toString()
+        val degree = state.windDomainModel.degree.toString()
+
+        findViewById<TextView>(R.id.tvWindSpeed).text =
+            getString(R.string.wind_speed, speed)
+        findViewById<TextView>(R.id.tvWindDegree).text =
+            getString(R.string.wind_degree, degree)
     }
 }

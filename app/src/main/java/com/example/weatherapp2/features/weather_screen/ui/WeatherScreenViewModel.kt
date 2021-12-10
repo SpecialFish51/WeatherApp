@@ -1,17 +1,63 @@
 package com.example.weatherapp2.features.weather_screen.ui
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.weatherapp2.base.BaseViewModel
+import com.example.weatherapp2.base.Event
+import com.example.weatherapp2.features.settings_screen.domain.SettingsInteractor
 import com.example.weatherapp2.features.weather_screen.domain.WeatherInteractor
 import com.example.weatherapp2.features.weather_screen.domain.model.WeatherDomainModel
-import kotlinx.coroutines.launch
+import com.example.weatherapp2.features.weather_screen.domain.model.WindDomainModel
 
-class WeatherScreenViewModel(private val weatherInteractor: WeatherInteractor) : ViewModel(){
-    val liveData: MutableLiveData<WeatherDomainModel> = MutableLiveData()
 
-    fun requestWeather() {
-        viewModelScope.launch {
-            liveData.postValue(weatherInteractor.getWeather())
+class WeatherScreenViewModel(
+    private val weatherInteractor: WeatherInteractor,
+    private val settingsInteractor: SettingsInteractor
+) : BaseViewModel<ViewState>() {
+    init {
+        processUiEvent(UIEvent.RequestWeather)
+    }
+
+    override fun initialViewState(): ViewState {
+        return ViewState(
+            WeatherDomainModel(
+                temperature = "0.0",
+                temperatureMax = "0.0",
+                temperatureMin = "0.0",
+                humidity = "0.0",
+                windDomainModel = WindDomainModel(0.0, 0)
+            ), "City", true, null
+        )
+    }
+
+    override suspend fun reduce(event: Event, previousState: ViewState): ViewState? {
+        when (event) {
+            is UIEvent.RequestWeather -> {
+                val cityName = settingsInteractor.getSettings().city
+                weatherInteractor.getWeather(cityName).fold(
+                    onSuccess = { processDataEvent(DataEvent.SuccessWeatherRequest(cityName, it)) },
+                    onError = {
+                        processDataEvent(
+                            DataEvent.ErrorWeatherRequest(
+                                it.localizedMessage ?: "Error"
+                            )
+                        )
+                    }
+                )
+            }
+            is DataEvent.SuccessWeatherRequest -> {
+                return previousState.copy(
+                    weatherModel = event.weatherModel,
+                    cityName = event.cityName,
+                    isLoading = false,
+                    error = null
+                )
+            }
+            is DataEvent.ErrorWeatherRequest -> {
+                return previousState.copy(
+                    isLoading = false,
+                    error = event.error
+                )
+            }
         }
-    }}
+        return null
+    }
+}
